@@ -213,7 +213,7 @@ router.post('/setCharging', function(req, res, next){
 		});
 	}
 
-        console.info('charging: ', charging);
+    //console.info('charging: ', charging);
 
 	let string = `deviceid=${deviceid}&value1=${charging}`;
 

@@ -34,25 +34,24 @@
             <div class="sub-controls">
               <ul class="control-list">
                 <li style="margin-bottom: 20px;">
-                  <vs-switch vs-color="danger" v-model="lever" vs-icon-off="report"
-                   :disabled="disabled_lever"
-                   @click="onLeverClick">
-                    <span slot="on">放下地鎖</span>
-                    <span slot="off">升起地鎖</span>
-                  </vs-switch>
+                  <b-button 
+                    :pressed.sync="charging" 
+                    @click="onChargingClick"
+                    variant="info">{{lever ? '放下地鎖' : '升起地鎖'}}</b-button>
                 </li>
+                
                 <li>
-                  <vs-switch vs-color="danger" v-model="charging" vs-icon-off="report"
-                   :disabled="disabled_charging"
-                   @click="onChargingClick">
-                    <span slot="on">停止充電</span>
-                    <span slot="off">開始充電</span>
-                  </vs-switch>
+                  <b-button 
+                    :pressed.sync="charging" 
+                    @click="onChargingClick"
+                    variant="primary">{{charging ? '停止充電' : '開始充電'}}</b-button>
                 </li>
+
               </ul>
             </div>
 
             <div class="avatar-card">
+              
               <ul class="avatar-list">
                 <li>用戶資料：{{current_user}}</li>
                 <li>授權狀況：共享開放</li>
@@ -60,6 +59,7 @@
                 <li>總共用電：{{total_watts}}KW</li>
                 <li>總共時間：{{total_interval}}Mins</li>
               </ul>
+
             </div>
 
             <p class="hidden">TOTAL WATTS: {{total_watts}}</p>
@@ -101,7 +101,7 @@
                   <li v-for="filter_day in filter_days" @click="changeDate(filter_day.date)">
                     <span class="day-of-week">{{filter_day.week_label}}</span>
                     <span class="date-of-week" :class="selected_date === filter_day.date ? 'marked-blue' : ''">{{filter_day.date_label}}</span>
-                  </i>
+                  </li>
                 </ul>
               </div>
 
@@ -124,13 +124,15 @@
 </template>
 
 <script>
+
 import _ from 'lodash';
 import moment from 'moment';
 import dropdown from './Dropdown';
 import EventBus from '../EventBus';
 
 const user_id       = 1;//for development only
-const action_prefix = 'http://13.230.197.60:8081/api/';
+// const action_prefix = 'http://13.230.197.60:8081/api/';
+const action_prefix = 'http://localhost:8081/api/';
 const socket        = io().connect();//for test: http://localhost:8081
 
 const parser = (app, data) => {
@@ -485,6 +487,10 @@ let main = {
         app.total_interval = result.body.record.total_interval;
         app.total_watts    = result.body.record.total_watts;
         app.current_user   = `${result.body.record.User.firstname} ${result.body.record.User.lastname}`;
+
+        if(!result.body.latest_record){
+          return;
+        }
 
         var st = moment(result.body.latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
         var et = result.body.latest_record.end_time !== '0000-00-00 00:00:00' ? moment(result.body.latest_record.end_time) : moment();
@@ -1148,5 +1154,12 @@ button {
 }
 .time_passed{
   font-size: 3rem;
+}
+.controls-caption{
+  margin-bottom: 0px !important;
+}
+.avatar-list{
+    border-left: 3px solid white;
+    padding-left: 10px;
 }
 </style>

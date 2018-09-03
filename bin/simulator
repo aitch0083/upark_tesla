@@ -130,6 +130,8 @@ var _c = setInterval(function(){
     let ott     = moment().unix();
     let to_save = record;
 
+    console.info("push: " + `timestamp=${ott}&deviceid=${to_save.deviceid}&value1=${to_save.value1}&value2=${to_save.value2}&value3=${to_save.value3}`);
+
     client_rawdata.publish(rawdata, `timestamp=${ott}&deviceid=${to_save.deviceid}&value1=${to_save.value1}&value2=${to_save.value2}&value3=${to_save.value3}`);
   }).catch(function(error){
     console.error('error @ /client_smartmeter PUT:', error);

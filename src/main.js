@@ -1,10 +1,14 @@
 import Vue from 'vue';
 import Vuesax from 'vuesax';
+import BootstrapVue from 'bootstrap-vue';
 import VueResource from 'vue-resource';
 import App from './App.vue';
 
 import 'vuesax/dist/vuesax.css'; //Vuesax styles
 import 'material-icons/iconfont/material-icons.css'; //Material ICONs
+
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 let MyPi = (Vue, options) => {
 
@@ -72,6 +76,7 @@ let MyPi = (Vue, options) => {
 
 Vue.use(Vuesax);
 Vue.use(VueResource);
+Vue.use(BootstrapVue);
 Vue.use(MyPi);
 
 Vue.config.productionTip = false;
