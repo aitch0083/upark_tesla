@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+
+var mqtt   = require('mqtt');
+var moment = require('moment');
+var SZ     = require('sequelize');
+var _      = require('lodash');
+
+var Simulator = require('../models/Simulator');
+var Promise   = SZ.Promise;
+var now       = moment();
+
+const user_id = 1;
+
+const mqtt_server = 'mqtt://13.230.197.60';
+
+const client_rawdata = mqtt.connect(mqtt_server, {
+  username: 'innoUser1',
+  password: 'Inno+789'
+});
+
+const client_smartmeter = mqtt.connect(mqtt_server, {
+  username: 'innoUser1',
+  password: 'Inno+789'
+});
+
+const ab2str = function (buf) {
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
+};
+
+const str2ab = function (str) {
+  let buf     = new ArrayBuffer(str.length*2); // 2 bytes for each char
+  let bufView = new Uint16Array(buf);
+
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+};
+
+const rawdata    = '/v1/device/5732153917/rawdata';
+const smartmeter = '/v1/device/5732153917/sensor/smartMeter/rawdata';
+
+const parser = (data) => {
+  //topic: "/v1/device/5732153917/rawdata",
+  //message: "timestamp=1532320225&deviceid=42087&value1=0&value2=25220&value3=0"
+  let mqtt_result = {};
+
+  let nest = data.split("&");
+
+  if(_.isArray(nest) && nest.length > 0){
+
+    nest.forEach((v, idx) => {
+      let idx_of_delimiter = v.indexOf('=');
+      let key              = v.substr(0, idx_of_delimiter);
+      let value            = v.substr(idx_of_delimiter + 1);
+
+      mqtt_result[key] = value;
+    });
+
+    return mqtt_result;
+
+  } else {
+    throw "Invalid data parsing";
+  }
+
+};//parser
+
+client_rawdata.on('connect', function () {
+  client_rawdata.subscribe(rawdata);
+  // client_rawdata.publish(rawdata, 'Hello mqtt. This is the test from API server.');
+});
+
+client_rawdata.on('message', function(topic, message){
+  var string = ab2str(message);
+
+  // console.info('client_rawdata:', parser(string));
+});
+
+client_smartmeter.on('connect', function () {
+  client_smartmeter.subscribe(smartmeter);
+});
+
+client_smartmeter.on('message', function(topic, message){
+  var data = parser(ab2str(message));
+
+  var deviceid = data.deviceid;
+  var value1   = data.value1;
+
+  Simulator.findOne({
+    limit: 1
+  })
+  .then(function(record){
+
+    if(record === null){
+      throw "No simulator installed";
+    }
+
+    let ott     = moment().unix();
+    let unix    = (Math.round(ott/10000000000)*10)+10.312;
+    let to_save = {
+      deviceid,
+      value1: value1 * 250,
+      value2: value1 == 1 ? Math.ceil(record.value2 + unix) : record.value2,
+      value3: value1
+    };
+
+    record.updateAttributes(to_save).then(function(record){
+
+      client_rawdata.publish(rawdata, `timestamp=${ott}&deviceid=${to_save.deviceid}&value1=${to_save.value1}&value2=${to_save.value2}&value3=${to_save.value3}`);
+
+    }).catch(function(error){
+      console.error('error @ /client_smartmeter PUT:', error);
+    });
+  })
+  .catch(function(error){
+    console.error('error @ /client_smartmeter PUT:', error);
+  });
+
+});
+
+var _c = setInterval(function(){
+  Simulator.findOne({
+    limit: 1
+  })
+  .then(function(record){
+    if(record === null){
+      throw "No simulator installed";
+    }
+
+    let ott     = moment().unix();
+    let to_save = record;
+
+    client_rawdata.publish(rawdata, `timestamp=${ott}&deviceid=${to_save.deviceid}&value1=${to_save.value1}&value2=${to_save.value2}&value3=${to_save.value3}`);
+  }).catch(function(error){
+    console.error('error @ /client_smartmeter PUT:', error);
+    clearInterval(_c);
+  });
+}, 1000);
