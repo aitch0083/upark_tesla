@@ -27,27 +27,28 @@
 
             <h5 class="controls-caption center_align">
               <i class="material-icons">expand_more</i>
-              地鎖控制介面
+              控制介面
               <i class="material-icons">expand_more</i>
             </h5>
 
             <div class="sub-controls">
-              <ul class="control-list">
-                <li style="margin-bottom: 20px;">
-                  <b-button 
-                    :pressed.sync="charging" 
-                    @click="onChargingClick"
-                    variant="info">{{lever ? '放下地鎖' : '升起地鎖'}}</b-button>
-                </li>
-                
-                <li>
-                  <b-button 
-                    :pressed.sync="charging" 
-                    @click="onChargingClick"
-                    variant="primary">{{charging ? '停止充電' : '開始充電'}}</b-button>
-                </li>
-
-              </ul>
+              <b-button
+                class="half-btn"
+                :pressed.sync="lever" 
+                @click="onLeverClick"
+                variant="warning">
+                <p><i class="material-icons">{{lever ? 'arrow_downward' : 'arrow_upward'}}</i></p>
+                {{lever ? '放下地鎖' : '升起地鎖'}}
+              </b-button>
+            
+              <b-button
+                class="half-btn"
+                :pressed.sync="charging" 
+                @click="onChargingClick"
+                variant="primary">
+                <p><i class="material-icons">{{charging ? 'stop' : 'battery_charging_full'}}</i></p>
+                {{charging ? '停止充電' : '開始充電'}}
+              </b-button>
             </div>
 
             <div class="avatar-card">
@@ -80,18 +81,31 @@
               <hr/>
 
               <div class="time_filter_container">
-                <span class="current_year">{{current_year}}</span>
-                <dropdown :options="months" 
+                <h3><span class="current_year">{{current_year}}</span></h3>
+                <!-- <dropdown :options="months" 
                           :selected="selected_month" 
                           v-on:updateOption="updateMonth" 
                           :placeholder="'月份'">
-                </dropdown>
-                <dropdown :options="weeks" 
+                </dropdown> -->
+
+                <b-form-select 
+                  v-model="selected_month" 
+                  :options="months"
+                  @change="updateMonth" 
+                  class="xs-2" />
+
+                <!-- <dropdown :options="weeks" 
                           :selected="selected_week" 
                           v-on:updateOption="updateWeek" 
                           :placeholder="'星期'"
                           :markedEvents="['change-option']">
-                </dropdown>
+                </dropdown> -->
+
+                <b-form-select 
+                  v-model="selected_week" 
+                  :options="weeks" 
+                  @change="updateWeek" 
+                  class="xs-5" />
               </div>
 
               <canvas id="chart-canvas"></canvas>
@@ -166,7 +180,7 @@ const parser = (app, data) => {
 
     // console.info('parsing result: ', app.mqtt_result);
 
-    app.charging = app.mqtt_result.value3 && app.mqtt_result.value3 === '1' ? true : false;
+    app.charging = app.mqtt_result.value3 && parseInt(app.mqtt_result.value3) === 1 ? true : false;
     app.disabled_charging = false;
 
     main.loadChargerStatus(app);
@@ -371,7 +385,9 @@ let main = {
 
       week_options.push({
         label: `第${w}週(${_sl}~${_el})`,
+        text: `第${w}週(${_sl}~${_el})`,
         name:  w,
+        value: _sl + ';' + _el,
         start: _sl,
         end:   _el
       }); 
@@ -379,12 +395,14 @@ let main = {
       // console.info('_cd:', _cd, ', parseInt(_s):', parseInt(_s), ', parseInt(_e):', parseInt(_e), ', t:', _cd >= parseInt(_s) && _cd <= parseInt(_e));
 
       if(_cd >= parseInt(_s) && _cd <= parseInt(_e)){
-        selected_week = {
-          label: `第${w}週(${_sl}~${_el})`,
-          name:  w,
-          start: _sl,
-          end:   _el
-        };
+        selected_week = _sl + ';' + _el;
+        // selected_week = {
+        //   label: `第${w}週(${_sl}~${_el})`,
+        //   text:  `第${w}週(${_sl}~${_el})`,
+        //   name:  w,
+        //   start: _sl,
+        //   end:   _el
+        // };
       }
     }
 
@@ -412,21 +430,22 @@ let main = {
       charging_history:  [],
       current_year: _m.format('YYYY'),
       months: [
-        {name:'Jan', 'value': 1}, 
-        {name:'Feb', 'value': 2}, 
-        {name:'Mar', 'value': 3}, 
-        {name:'Apr', 'value': 4}, 
-        {name:'May', 'value': 5}, 
-        {name:'Jun', 'value': 6}, 
-        {name:'Jul', 'value': 7}, 
-        {name:'Aug', 'value': 8}, 
-        {name:'Sep', 'value': 9}, 
-        {name:'Oct', 'value': 10}, 
-        {name:'Nov', 'value': 11}, 
-        {name:'Dec', 'value': 12}],
-      selected_month: {
-        name: _m.format('MMM'),
-      },
+        {name:'Jan', 'value': '1', 'text':'Jan'}, 
+        {name:'Feb', 'value': '2', 'text':'Feb'}, 
+        {name:'Mar', 'value': '3', 'text':'Mar'}, 
+        {name:'Apr', 'value': '4', 'text':'Apr'}, 
+        {name:'May', 'value': '5', 'text':'May'}, 
+        {name:'Jun', 'value': '6', 'text':'Jun'}, 
+        {name:'Jul', 'value': '7', 'text':'Jul'}, 
+        {name:'Aug', 'value': '8', 'text':'Aug'}, 
+        {name:'Sep', 'value': '9', 'text':'Sep'}, 
+        {name:'Oct', 'value': '10', 'text':'Oct'}, 
+        {name:'Nov', 'value': '11', 'text':'Nov'}, 
+        {name:'Dec', 'value': '12', 'text':'Dec'}],
+      // selected_month: {
+      //   name: _m.format('MMM'),
+      // },
+      selected_month: _m.format('M'),
       weeks: week_options,
       selected_week: selected_week,
       selected_date: selected_date,
@@ -451,7 +470,8 @@ let main = {
       // app.disabled_charging = app.lever;
 
       if( result.status === 200 && result.body.success ){
-        app.lever = result.body.data.status;
+        app.lever = parseInt(result.body.data.status) === 0 ? false : true;
+        //console.info('loadLockStatus:', app.lever, ', org:',result.body.data.status);
       } else {
         app.show_error = true;
         app.error_msg  = result.body.message;
@@ -535,9 +555,19 @@ let main = {
       clearTimeout(_cc);
     }, 400);
 
-    var start    = moment(app.current_year + '/' + app.selected_week.start, 'YYYY/MM/DD');
-    var end      = moment(app.current_year + '/' + app.selected_week.end, 'YYYY/MM/DD');
+    var dummy = app.selected_week.split(';');
+    var dummy2 = {
+      start: dummy[0],
+      end:   dummy[1]
+    };
+
+    // console.info('app.selected_week:', app.selected_week, ',dummy2:',dummy2, ', opt:', app.current_year + '/' + dummy2.start);
+
+    var start    = moment(app.current_year + '/' + dummy2.start, 'YYYY/MM/DD');
+    var end      = moment(app.current_year + '/' + dummy2.end, 'YYYY/MM/DD');
     var duration = moment.duration(end.diff(start)).days();
+
+    // console.info('start:', start.format('YYYY/MM/DD'));
 
     // console.info('app.selected_week:', app.selected_week, ', duration:', duration.days());return;
     var day = start;
@@ -555,6 +585,8 @@ let main = {
         date:       day.format('YYYY-MM-DD')
       });
     }
+
+    // console.info();
 
     app.loadLogs();
 
@@ -662,12 +694,16 @@ let main = {
           // app.show_info = true;
           // app.info_msg  = 'Lock is :' + (app.lever ? 'UP' : 'DOWN') + '. Updating status...';
 
+          // console.info('setTimeout.....');
+
           setTimeout(() => {
+            
             app.show_info = false;
             app.info_msg = '';
-            // main.loadLockStatus(app);
+            //main.loadLockStatus(app);
             app.disabled_lever = false;
-          }, 18000);
+
+          }, 2800);
 
         } else {
           // app.show_error     = true;
@@ -702,7 +738,7 @@ let main = {
         return false;
       }
 
-      // console.info('app.lever:', app.lever);
+      console.info('app.lever:', app.lever);
 
       if(app.lever){
         app.show_error = true;
@@ -765,12 +801,13 @@ let main = {
 
     updateMonth(selected_month) {
       // console.info('selected_month:', selected_month);
+
       var app   = this;
-      var _m    = moment(selected_month.value, 'MM');
+      var _m    = moment(selected_month, 'MM');
       var start = _m.startOf('month').format('DD');
       var end   = _m.endOf('month').format('DD');
 
-      _m        = moment(selected_month.value, 'MM');
+      _m        = moment(selected_month, 'MM');
       var weeks = (end-start+1)/7;
       var _cd   = parseInt(_m.format('DD'));//current date
       weeks     = Math.ceil(weeks);
@@ -796,6 +833,8 @@ let main = {
 
         week_options.push({
           label: `第${w}週(${_sl}~${_el})`,
+          text:  `第${w}週(${_sl}~${_el})`,
+          value: _sl + ';' + _el,
           name:  w,
           start: _sl,
           end:   _el
@@ -804,16 +843,17 @@ let main = {
         // console.info('_cd:', _cd, ', parseInt(_s):', parseInt(_s), ', parseInt(_e):', parseInt(_e), ', t:', _cd >= parseInt(_s) && _cd <= parseInt(_e));
 
         if(_cd >= parseInt(_s) && _cd <= parseInt(_e)){
-          selected_week = {
-            label: `第${w}週(${_sl}~${_el})`,
-            name:  w,
-            start: _sl,
-            end:   _el
-          };
+          selected_week = _sl + ';' + _el;
+          // selected_week = {
+          //   label: `第${w}週(${_sl}~${_el})`,
+          //   name:  w,
+          //   start: _sl,
+          //   end:   _el
+          // };
         }
       }
 
-      // console.info('new selected_week:', selected_week);
+      // console.info('new week_options:', week_options);
       app.selected_date = _m.startOf('month').format('YYYY-MM-DD');
       app.weeks         = week_options;
       app.selected_week = selected_week;
@@ -827,9 +867,15 @@ let main = {
     updateWeek(selected_week) {
       var app = this;
 
-      console.info('selected_week:', selected_week);
-      var start    = moment(app.current_year + '/' + selected_week.start, 'YYYY/MM/DD');
-      var end      = moment(app.current_year + '/' + selected_week.end, 'YYYY/MM/DD');
+      var dummy = selected_week.split(';');
+      var dummy2 = {
+        start: dummy[0],
+        end:   dummy[1]
+      };
+
+      // console.info('selected_week:', selected_week);
+      var start    = moment(app.current_year + '/' + dummy2.start, 'YYYY/MM/DD');
+      var end      = moment(app.current_year + '/' + dummy2.end, 'YYYY/MM/DD');
       var duration = moment.duration(end.diff(start)).days();
 
       if(app.selected_date !== start.format('YYYY-MM-DD')){
@@ -855,6 +901,8 @@ let main = {
         });
       }
 
+      // console.info('updateWeek::app.filter_days:', app.filter_days);
+
       app.loadLogs(selected_week);
     },//eo updateWeek
 
@@ -872,14 +920,20 @@ let main = {
         return;
       }
 
+      var dummy = selected_week.split(';');
+      var dummy2 = {
+        start: dummy[0],
+        end:   dummy[1]
+      };
+
       //get charging pole status
       app.$http
       .get(action_prefix + 'listChargings', {
         params: {
           user_id: user_id,
           deviceid: app.mqtt_result.deviceid,
-          start: moment(app.current_year + '/' + selected_week.start, 'YYYY/MM/DD').format('YYYY-MM-DD') + ' 00:00:00',
-          end: moment(app.current_year + '/' + selected_week.end, 'YYYY/MM/DD').format('YYYY-MM-DD') + ' 23:59:59'
+          start: moment(app.current_year + '/' + dummy2.start, 'YYYY/MM/DD').format('YYYY-MM-DD') + ' 00:00:00',
+          end: moment(app.current_year + '/' + dummy2.end, 'YYYY/MM/DD').format('YYYY-MM-DD') + ' 23:59:59'
         }
       }).then((result) => {
 
@@ -1032,10 +1086,11 @@ export default main;
   font-weight: bold;
 }
 .controls-caption{
-  padding-top: 1rem;
+  padding-top: 0.2rem;
   background-color: #3CAAA9;
   font-size: 1.3rem;
-  padding-bottom: 2rem;
+  padding-bottom: 0.2rem;
+  color: #EAEAEA;
 }
 .avatar-card{
   background-color: #3CAAA9;
@@ -1074,7 +1129,7 @@ div.primary{
 }
 .show-history-btn{
   position: relative;
-  right: -4.5rem;
+  right: -1rem;
   top: 0.4rem;
   cursor: pointer;
   max-width: 30px;
@@ -1159,7 +1214,19 @@ button {
   margin-bottom: 0px !important;
 }
 .avatar-list{
-    border-left: 3px solid white;
-    padding-left: 10px;
+  border-left: 3px solid white;
+  padding-left: 10px;
+}
+.circle-btn{
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+.half-btn{
+  width: 44%;
+  float: left;
+  height: 80%;
+  text-align: center;
+  padding: .375rem 0px;
 }
 </style>
