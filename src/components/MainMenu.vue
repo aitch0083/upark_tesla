@@ -145,8 +145,8 @@ import dropdown from './Dropdown';
 import EventBus from '../EventBus';
 
 const user_id       = 1;//for development only
-// const action_prefix = 'http://13.230.197.60:8081/api/';
-const action_prefix = 'http://localhost:8081/api/';
+const action_prefix = 'http://13.230.197.60:8081/api/';
+// const action_prefix = 'http://localhost:8081/api/';
 const socket        = io().connect();//for test: http://localhost:8081
 
 const parser = (app, data) => {
