@@ -20,7 +20,7 @@
             <div id="statitics-box">
               <span class="time_passed">{{time_passed}}</span>
               <hr/>
-              <span class="watts_used">本次累計{{watts_used}}W/H</span>
+              <span class="watts_used">本次累計{{watts_used}}wh</span>
             </div>
 
             <div class="chargin-status-div" :class="charging?'charging':'primary'">{{charging ? '充電中' : '已停止'}}</b></div>
@@ -57,7 +57,7 @@
                 <li>用戶資料：{{current_user}}</li>
                 <li>授權狀況：共享開放</li>
                 <li>收費金流：NTD 50/H</li>
-                <li>總共用電：{{total_watts}}W/H</li>
+                <li>總共用電：{{total_watts}}wh</li>
                 <li>總共時間：{{total_interval}}Mins</li>
               </ul>
 
