@@ -1232,7 +1232,7 @@ button {
   text-align: center;
   padding: .375rem 0px;
 }
-#app{
+#app div.centerx{
   max-width: 400px;
   margin: 0px;
 }
