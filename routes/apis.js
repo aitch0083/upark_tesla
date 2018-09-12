@@ -10,6 +10,30 @@ var ChargingLog = require('../models/ChargingLog');
 var Promise     = SZ.Promise;
 var now         = moment();
 
+const parser = (message) => {
+  //topic: "/v1/device/5732153917/rawdata",
+  //message: "timestamp=1532320225&deviceid=42087&value1=0&value2=25220&value3=0"
+
+  var nest = message.split("&");
+  var mqtt_result = {};
+
+  if(_.isArray(nest) && nest.length > 0){
+
+    nest.forEach((v, idx) => {
+      let idx_of_delimiter = v.indexOf('=');
+      let key              = v.substr(0, idx_of_delimiter);
+      let value            = v.substr(idx_of_delimiter + 1);
+
+      mqtt_result[key] = value;
+    });
+
+    return mqtt_result;
+  } else {
+    throw "Invalid data parsing";
+  }
+
+};//parser
+
 const user_id = 1;
 
 ChargingLog.belongsTo(User, {foreignKey:'user_id', as:'User'});
@@ -50,14 +74,19 @@ client_rawdata.on('connect', function () {
 
 client_rawdata.on('message', function(topic, message){
 
-	console.info('client_rawdata: ', ab2str(message));
+	// console.info('client_rawdata: ', ab2str(message));
+	// 
+	var de_msg = ab2str(message);
 
 	if(router.socket_io !== undefined){//check "bin/www" for the injection
 		router.socket_io.emit('mqtt_stream', {
 			topic: topic,
-			message: ab2str(message)
+			message: de_msg
 		});
 	}
+
+	//test if the device is still on
+	console.info('parser: ', parser(de_msg));
 });
 
 client_smartmeter.on('connect', function () {
