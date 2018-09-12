@@ -1232,4 +1232,8 @@ button {
   text-align: center;
   padding: .375rem 0px;
 }
+#app{
+  max-width: 400px;
+  margin: 0px;
+}
 </style>
