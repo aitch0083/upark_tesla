@@ -531,7 +531,7 @@ let main = {
         ew = ew <= 0 ? app.mqtt_result.value2 : ew;
 
         // app.time_passed = `${mm}:${ms}`;
-        app.time_passed = result.body.latest_record.time_elipsed;
+        app.time_passed = result.body.time_elipsed;
         app.watts_used  = ew - result.body.latest_record.start_watts;
         app.watts_used  = app.watts_used <= 0 ? 0 : app.watts_used;
 
