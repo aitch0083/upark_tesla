@@ -4,7 +4,7 @@
      vs-align="flex-start"
      vs-type="flex" vs-justify="center" vs-w="12">
 
-      <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="4" vs-xs="12">
+      <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="5" vs-xs="12">
         <vs-card v-if="show_main">
 
           <vs-card-body>
