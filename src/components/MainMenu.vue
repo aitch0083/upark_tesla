@@ -32,14 +32,14 @@
             </h5>
 
             <div class="sub-controls">
-              <b-button
+              <!-- <b-button
                 class="half-btn"
                 :pressed.sync="lever" 
                 @click="onLeverClick"
                 variant="warning">
                 <p><i class="material-icons">{{lever ? 'arrow_downward' : 'arrow_upward'}}</i></p>
                 {{lever ? '放下地鎖' : '升起地鎖'}}
-              </b-button>
+              </b-button> -->
             
               <b-button
                 class="half-btn"
