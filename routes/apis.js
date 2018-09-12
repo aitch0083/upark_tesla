@@ -50,7 +50,7 @@ client_rawdata.on('connect', function () {
 
 client_rawdata.on('message', function(topic, message){
 
-	console.info('client_rawdata: ', message);
+	console.info('client_rawdata: ', ab2str(message));
 
 	if(router.socket_io !== undefined){//check "bin/www" for the injection
 		router.socket_io.emit('mqtt_stream', {
