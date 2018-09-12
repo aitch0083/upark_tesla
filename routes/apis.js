@@ -119,6 +119,7 @@ client_rawdata.on('message', function(topic, message){
 					//calculate the following:
 					let startTime = moment(record.start_time, 'YYYY-MM-DD HH:mm:ss');
 					let dd        = moment.duration(now.diff(startTime));
+					let watts     = mqtt_result.value2;
 
 					//console.info('record.start_time:', record.start_time,', startTime:', startTime.format('YYYY-MM-DD HH:mm:ss'));
 					// console.info('find dd:', dd.minutes());
