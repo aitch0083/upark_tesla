@@ -27,6 +27,12 @@ let MyPi = (Vue, options) => {
 		return value.charAt(0).toUpperCase() + value.slice(1)
 	});
 
+	Vue.filter('kmeter', function (value) {
+		if (!value) return ''
+		value = parseFloat(Math.round(value/1000)).toFixed(2);
+		return value + 'K';
+	});
+
 	Vue.filter('cap', function (value) {
 		if (!value) return ''
 		value = value.toString()
