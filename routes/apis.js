@@ -49,6 +49,9 @@ client_rawdata.on('connect', function () {
 });
 
 client_rawdata.on('message', function(topic, message){
+
+	console.info('client_rawdata: ', message);
+
 	if(router.socket_io !== undefined){//check "bin/www" for the injection
 		router.socket_io.emit('mqtt_stream', {
 			topic: topic,
@@ -388,8 +391,9 @@ router.get('/getCharging', function(req, res, next){
 	        
 	        var dd = moment.duration(et.diff(st));
 	        var mm = dd.minutes() + (dd.hours() * 60);
-	        mm = mm >= 10 ? (mm) : '0' + mm;
 	        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+	        
+	        mm = mm >= 10 ? (mm) : '0' + mm;
 
 	        res.json({
 				success: true,
