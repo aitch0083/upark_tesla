@@ -4,6 +4,7 @@ var router  = express.Router();
 var mqtt    = require('mqtt');
 var moment  = require('moment');
 var SZ      = require('sequelize');
+var _       = require('lodash');
 
 var User        = require('../models/User');
 var ChargingLog = require('../models/ChargingLog');
