@@ -284,7 +284,7 @@ const chart_config = {
   data: {
     labels: [],
     datasets: [{
-      label: '充電使用量(KW)',
+      label: '充電使用量(Kwh)',
       backgroundColor: 'rgb(54, 162, 235)',
       borderColor: 'rgb(54, 162, 235)',
       data: [],
@@ -962,10 +962,10 @@ let main = {
               var target_date = moment(record.start_time.substr(0,10), 'YYYY-MM-DD').format('DD');
 
               if(to_show_watts[target_date] !== undefined){
-                to_show_watts[target_date] += record.used_watts;
+                to_show_watts[target_date] += parseFloat(Math.round(record.used_watts/1000)).toFixed(2);
                 to_show_time[target_date]  += record.interval;
               } else {
-                to_show_watts[target_date] = record.used_watts;
+                to_show_watts[target_date] = parseFloat(Math.round(record.used_watts/1000)).toFixed(2);
                 to_show_time[target_date]  = record.interval;
               }
             });
