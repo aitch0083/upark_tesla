@@ -514,16 +514,17 @@ let main = {
 
         // console.info('result.body.latest_record.end_time:', result.body.latest_record.end_time);
 
-        var st = moment(result.body.latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
-        var et = result.body.latest_record.end_time !== '0000-00-00 00:00:00' ? moment(result.body.latest_record.end_time) : moment();
+        // var st = moment(result.body.latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
+        // var et = result.body.latest_record.end_time !== '0000-00-00 00:00:00' ? moment(result.body.latest_record.end_time) : moment();
         
         //console.info(et.format('YYYY-MM-DD HH:mm:ss'), st.format('YYYY-MM-DD HH:mm:ss'));
         
-        var dd = moment.duration(et.diff(st));
-        var mm = dd.minutes() >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes() + (dd.hours() * 60));
-        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+        // var dd = moment.duration(et.diff(st));
+        // var mm = dd.minutes() >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes() + (dd.hours() * 60));
+        // var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
 
-        draw_gauge(dd.minutes() + (dd.hours() * 60));
+        // draw_gauge(dd.minutes() + (dd.hours() * 60));
+        draw_gauge(result.body.gauge_value);
 
         // console.info('dd.hours() * 60:', dd.hours() * 60, ', mm:', mm, ', ms:',ms);
 

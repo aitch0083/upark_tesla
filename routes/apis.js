@@ -482,14 +482,16 @@ router.get('/getCharging', function(req, res, next){
 				var st = moment(latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
 		        var et = latest_record.end_time !== '0000-00-00 00:00:00' ? moment(latest_record.end_time, 'YYYY-MM-DD HH:mm:ss') : moment();
 		        
-		        var dd = moment.duration(et.diff(st));
-		        var mm = dd.minutes() + (dd.hours() * 60);
-		        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+		        var dd          = moment.duration(et.diff(st));
+		        var mm          = dd.minutes() + (dd.hours() * 60);
+		        var ms          = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+		        var gauge_value = mm;
 		        
 		        mm = mm >= 10 ? (mm) : '0' + mm;
 	    	} else {
-	    		var mm = '00';
-	    		var ms = '00';
+	    		var mm          = '00';
+	    		var ms          = '00';
+	    		var gauge_value = 0;
 	    	}
 
 	        res.json({
@@ -498,6 +500,7 @@ router.get('/getCharging', function(req, res, next){
 				record: return_record,
 				time_elipsed: `${mm}:${ms}`,
 				latest_record,
+				gauge_value
 			});
 
 		}).catch(function(error){
