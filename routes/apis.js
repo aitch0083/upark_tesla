@@ -376,7 +376,7 @@ router.get('/getCharging', function(req, res, next){
 				total_interval: 0, 
 				total_watts: 0, 
 				User: user,
-				time_elipsed: '00:00';
+				time_elipsed: '00:00'
 			};
 
 			if(record.length){
