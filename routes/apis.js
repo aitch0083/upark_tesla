@@ -87,7 +87,68 @@ client_rawdata.on('message', function(topic, message){
 	}
 
 	//test if the device is still on
-	console.info('parser: ', parser(de_msg));
+	// console.info('parser: ', parser(de_msg));
+	var mqtt_result = parser(de_msg);
+
+	if(parseInt(mqtt_result.value1) < 3000){
+		var _c = setTimeout(function(){
+			if(parseInt(mqtt_result.value1) < 3000){ //the charging stopped
+				
+				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
+
+				var conditions = {
+					user_id,
+					deviceid: mqtt_result.deviceid,
+					status: 'start',
+					end_watts: 0,
+					interval: 0
+				};
+
+				let now = moment();
+
+				ChargingLog.findOne({
+					where: conditions,
+					order: [["id", "desc"]],
+					limit: 1,
+					include: [
+						{ model:User, as:'User', required: true, attributes:['id', 'firstname', 'lastname'] }
+					]
+				})
+				.then(function(record){
+
+					//calculate the following:
+					let startTime = moment(record.start_time, 'YYYY-MM-DD HH:mm:ss');
+					let dd        = moment.duration(now.diff(startTime));
+
+					//console.info('record.start_time:', record.start_time,', startTime:', startTime.format('YYYY-MM-DD HH:mm:ss'));
+					// console.info('find dd:', dd.minutes());
+
+					record.updateAttributes({
+						end_watts: watts,
+						interval: dd.minutes()  + (dd.hours() * 60),
+						used_watts: (watts - record.start_watts),
+						status: 'end',
+						end_time: now.format('YYYY-MM-DD HH:mm:ss')
+					}).then(function(record){
+
+						console.info('Shutdown charing pole: ',{
+							success: true,
+							message: 'Charging stopped'
+						});
+					}).catch(function(error){
+
+						console.error('error @ /setCharging PUT:', error);
+					});
+				})
+				.catch(function(error){
+
+					console.error('error @ /setCharging POST:', error);
+				});
+
+				clearTimeout(_c);
+			}
+		}, 60000);
+	}
 });
 
 client_smartmeter.on('connect', function () {
@@ -416,14 +477,20 @@ router.get('/getCharging', function(req, res, next){
 				return_record = record.pop();
 			}
 
-			var st = moment(latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
-	        var et = latest_record.end_time !== '0000-00-00 00:00:00' ? moment(latest_record.end_time, 'YYYY-MM-DD HH:mm:ss') : moment();
-	        
-	        var dd = moment.duration(et.diff(st));
-	        var mm = dd.minutes() + (dd.hours() * 60);
-	        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
-	        
-	        mm = mm >= 10 ? (mm) : '0' + mm;
+			if(latest_record){
+
+				var st = moment(latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
+		        var et = latest_record.end_time !== '0000-00-00 00:00:00' ? moment(latest_record.end_time, 'YYYY-MM-DD HH:mm:ss') : moment();
+		        
+		        var dd = moment.duration(et.diff(st));
+		        var mm = dd.minutes() + (dd.hours() * 60);
+		        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+		        
+		        mm = mm >= 10 ? (mm) : '0' + mm;
+	    	} else {
+	    		var mm = '00';
+	    		var ms = '00';
+	    	}
 
 	        res.json({
 				success: true,
