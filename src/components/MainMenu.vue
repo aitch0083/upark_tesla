@@ -743,12 +743,12 @@ let main = {
 
       console.info('app.lever:', app.lever);
 
-      if(app.lever){
-        app.show_error = true;
-        app.error_msg  = "Please lower the lock first";
-        event.preventDefault();
-        return false;
-      }
+      // if(app.lever){
+      //   app.show_error = true;
+      //   app.error_msg  = "Please lower the lock first";
+      //   event.preventDefault();
+      //   return false;
+      // }
 
       app.mqtt_updating = true;
 
