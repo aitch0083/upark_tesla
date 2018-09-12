@@ -516,7 +516,9 @@ let main = {
 
         var st = moment(result.body.latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
         var et = result.body.latest_record.end_time !== '0000-00-00 00:00:00' ? moment(result.body.latest_record.end_time) : moment();
-        console.info(et.format('YYYY-MM-DD HH:mm:ss'), st.format('YYYY-MM-DD HH:mm:ss'));
+        
+        //console.info(et.format('YYYY-MM-DD HH:mm:ss'), st.format('YYYY-MM-DD HH:mm:ss'));
+        
         var dd = moment.duration(et.diff(st));
         var mm = dd.minutes() >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes() + (dd.hours() * 60));
         var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
@@ -528,7 +530,8 @@ let main = {
         let ew = result.body.latest_record.end_watts;
         ew = ew <= 0 ? app.mqtt_result.value2 : ew;
 
-        app.time_passed = `${mm}:${ms}`;
+        // app.time_passed = `${mm}:${ms}`;
+        app.time_passed = result.body.latest_record.time_elipsed;
         app.watts_used  = ew - result.body.latest_record.start_watts;
         app.watts_used  = app.watts_used <= 0 ? 0 : app.watts_used;
 

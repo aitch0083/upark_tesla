@@ -372,10 +372,30 @@ router.get('/getCharging', function(req, res, next){
 			limit: 1
 		}).then(function(latest_record){
 
+			var return_record = { 
+				total_interval: 0, 
+				total_watts: 0, 
+				User: user,
+				time_elipsed: '00:00';
+			};
+
+			if(record.length){
+				return_record = record.pop();
+			}
+
+			var st = moment(latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
+	        var et = latest_record.end_time !== '0000-00-00 00:00:00' ? moment(latest_record.end_time, 'YYYY-MM-DD HH:mm:ss') : moment();
+	        
+	        var dd = moment.duration(et.diff(st));
+	        var mm = dd.minutes() >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes() + (dd.hours() * 60));
+	        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
+
+	        latest_record.time_elipsed = `${mm}:${ms}`;
+
 			res.json({
 				success: true,
 				message: 'Latest charging record',
-				record: record.length ? record.pop() : { total_interval: 0, total_watts: 0, User: user },
+				record: return_record,
 				latest_record
 			});
 
