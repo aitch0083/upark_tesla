@@ -390,13 +390,12 @@ router.get('/getCharging', function(req, res, next){
 	        var mm = dd.minutes() >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes() + (dd.hours() * 60));
 	        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
 
-	        latest_record.time_elipsed = `${mm}:${ms}`;
-
-			res.json({
+	        res.json({
 				success: true,
 				message: 'Latest charging record',
 				record: return_record,
-				latest_record
+				time_elipsed: `${mm}:${ms}`,
+				latest_record,
 			});
 
 		}).catch(function(error){
