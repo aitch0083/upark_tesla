@@ -387,8 +387,9 @@ router.get('/getCharging', function(req, res, next){
 	        var et = latest_record.end_time !== '0000-00-00 00:00:00' ? moment(latest_record.end_time, 'YYYY-MM-DD HH:mm:ss') : moment();
 	        
 	        var dd = moment.duration(et.diff(st));
-	        var mm = parseInt(dd.minutes()) >= 10 ? (dd.minutes() + (dd.hours() * 60)) : '0' + (dd.minutes());
-	        var ms = parseInt(dd.seconds()) >= 10 ? dd.seconds() : '0' + dd.seconds();
+	        var mm = dd.minutes() + (dd.hours() * 60);
+	        mm = mm >= 10 ? (mm) : '0' + mm;
+	        var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
 
 	        res.json({
 				success: true,
