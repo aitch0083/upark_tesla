@@ -4,7 +4,7 @@
      vs-align="flex-start"
      vs-type="flex" vs-justify="center" vs-w="12">
 
-      <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="6" vs-xs="12">
+      <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="4" vs-xs="12">
         <vs-card v-if="show_main">
 
           <vs-card-body>
@@ -1231,9 +1231,5 @@ button {
   height: 80%;
   text-align: center;
   padding: .375rem 0px;
-}
-#app div.centerx{
-  max-width: 400px;
-  margin: 0px;
 }
 </style>
