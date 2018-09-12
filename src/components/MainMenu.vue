@@ -1227,9 +1227,10 @@ button {
 }
 .half-btn{
   width: 44%;
-  float: left;
+  /*float: left;*/
   height: 80%;
   text-align: center;
   padding: .375rem 0px;
+  margin: auto;
 }
 </style>
