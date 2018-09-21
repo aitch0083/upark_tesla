@@ -90,9 +90,10 @@ client_rawdata.on('message', function(topic, message){
 	// console.info('parser: ', parser(de_msg));
 	var mqtt_result = parser(de_msg);
 
-	if(parseInt(mqtt_result.value1) < 3000){
+	if(parseInt(mqtt_result.value1) < 3000 && mqtt_result.value3){
 		var _c = setTimeout(function(){
-			if(parseInt(mqtt_result.value1) < 3000){ //the charging stopped
+			clearTimeout(_c);
+			if(parseInt(mqtt_result.value1) < 3000 && mqtt_result.value3){ //the charging stopped
 				
 				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
 
@@ -145,8 +146,6 @@ client_rawdata.on('message', function(topic, message){
 
 					console.error('error @ /setCharging POST:', error);
 				});
-
-				clearTimeout(_c);
 			}
 		}, 60000);
 	}
