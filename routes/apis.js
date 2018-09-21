@@ -509,7 +509,8 @@ router.get('/getCharging', function(req, res, next){
 				record: return_record,
 				time_elipsed: `${mm}:${ms}`,
 				latest_record,
-				gauge_value
+				gauge_value,
+				mqtt_object
 			});
 
 		}).catch(function(error){
