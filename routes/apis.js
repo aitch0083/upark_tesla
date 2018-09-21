@@ -10,6 +10,7 @@ var User        = require('../models/User');
 var ChargingLog = require('../models/ChargingLog');
 var Promise     = SZ.Promise;
 var now         = moment();
+var mqtt_object = {};
 
 const parser = (message) => {
   //topic: "/v1/device/5732153917/rawdata",
@@ -89,6 +90,8 @@ client_rawdata.on('message', function(topic, message){
 	//test if the device is still on
 	// console.info('parser: ', parser(de_msg));
 	var mqtt_result = parser(de_msg);
+
+	mqtt_object = mqtt_result;
 
 	if(parseInt(mqtt_result.value1) < 3000){
 		var _c = setTimeout(function(){
