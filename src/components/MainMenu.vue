@@ -550,7 +550,7 @@ let main = {
         // var ms = dd.seconds() >= 10 ? dd.seconds() : '0' + dd.seconds();
 
         // draw_gauge(dd.minutes() + (dd.hours() * 60));
-        draw_gauge(result.body.gauge_value);
+        
 
         // console.info('dd.hours() * 60:', dd.hours() * 60, ', mm:', mm, ', ms:',ms);
 
@@ -562,6 +562,11 @@ let main = {
           app.time_passed = result.body.time_elipsed;
           app.watts_used  = ew - result.body.latest_record.start_watts;
           app.watts_used  = app.watts_used <= 0 ? 0 : app.watts_used;
+          draw_gauge(result.body.gauge_value);
+        } else {
+          app.time_passed = '00:00';
+          app.watts_used  = 0;
+          draw_gauge(0);
         }
 
       } else {
