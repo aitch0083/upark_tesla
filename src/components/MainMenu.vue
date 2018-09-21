@@ -553,9 +553,9 @@ let main = {
         // app.time_passed = `${mm}:${ms}`;
         if(result.body.mqtt_object.value3 == '1'){
           app.time_passed = result.body.time_elipsed;
+          app.watts_used  = ew - result.body.latest_record.start_watts;
+          app.watts_used  = app.watts_used <= 0 ? 0 : app.watts_used;
         }
-        app.watts_used  = ew - result.body.latest_record.start_watts;
-        app.watts_used  = app.watts_used <= 0 ? 0 : app.watts_used;
 
       } else {
         app.show_error = true;
