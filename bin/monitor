@@ -74,14 +74,7 @@ client_rawdata.on('message', function(topic, message){
 	// console.info('client_rawdata: ', ab2str(message));
 	
 	var de_msg = ab2str(message);
-
-	if(router.socket_io !== undefined){//check "bin/www" for the injection
-		router.socket_io.emit('mqtt_stream', {
-			topic: topic,
-			message: de_msg
-		});
-	}
-
+	
 	//test if the device is still on
 	// console.info('parser: ', parser(de_msg));
 	var mqtt_result = parser(de_msg);
