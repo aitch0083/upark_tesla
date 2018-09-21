@@ -137,7 +137,7 @@ client_rawdata.on('message', function(topic, message){
 					}).then(function(record){
 
 						client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
-						
+
 						console.info('Shutdown charing pole: ',{
 							success: true,
 							message: 'Charging stopped'
@@ -152,7 +152,7 @@ client_rawdata.on('message', function(topic, message){
 					console.error('error @ /setCharging POST:', error);
 				});
 			}
-		}, 60000);
+		}, 90000);
 	}
 });
 
