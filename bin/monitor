@@ -145,4 +145,4 @@ var _c = setInterval(function(){
 			console.error('error @ /Monitor::setCharging POST:', error);
 		});
 	}
-}, 3000);
+}, 90000);
