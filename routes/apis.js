@@ -90,10 +90,11 @@ client_rawdata.on('message', function(topic, message){
 	// console.info('parser: ', parser(de_msg));
 	var mqtt_result = parser(de_msg);
 
-	if(parseInt(mqtt_result.value1) < 3000 && mqtt_result.value3){
+	if(parseInt(mqtt_result.value1) < 3000 && parseInt(mqtt_result.value3) === 1){
 		var _c = setTimeout(function(){
 			clearTimeout(_c);
-			if(parseInt(mqtt_result.value1) < 3000 && mqtt_result.value3){ //the charging stopped
+			
+			if(parseInt(mqtt_result.value1) < 3000 && parseInt(mqtt_result.value3) === 1){ //the charging stopped
 				
 				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
 
@@ -116,6 +117,10 @@ client_rawdata.on('message', function(topic, message){
 					]
 				})
 				.then(function(record){
+
+					if(record === null || !record){
+						return;
+					}
 
 					//calculate the following:
 					let startTime = moment(record.start_time, 'YYYY-MM-DD HH:mm:ss');
