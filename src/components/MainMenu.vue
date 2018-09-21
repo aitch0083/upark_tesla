@@ -134,17 +134,19 @@
       </vs-col>
 
     </vs-row>
+
+    <b-modal ref="waittingCharging" hide-footer>
+      <h3><i class="material-icons">power</i></h3>
+      等待連結
+      <b-button
+        @click="onCancelCharing"
+        variant="warning">
+        取消
+      </b-button>
+    </b-modal>
+
   </div>
 
-  <b-modal ref="waittingModal">
-    <h3><i class="material-icons">power</i></h3>
-    等待連結
-    <b-button
-      @click="onCancelCharing"
-      variant="warning">
-      取消
-    </b-button>
-  </b-modal>
 </template>
 
 <script>
@@ -525,7 +527,7 @@ let main = {
         console.info('result.body.mqtt_object.value3:', result.body.mqtt_object.value3, ', result.body.mqtt_object.value1:', result.body.mqtt_object.value1);
 
         if(result.body.mqtt_object.value3 == '1' && result.body.mqtt_object.value1 == '0'){
-          app.$refs.waittingModal.show();
+          app.$refs.waittingCharging.show();
           return;
         }
 
@@ -744,7 +746,7 @@ let main = {
     },//eo onLeverClick
 
     onCancelCharing(event){
-      this.$refs.waittingModal.hide();
+      this.$refs.waittingCharging.hide();
       this.charging = 0;
       this.onChargingClick.apply(this, [event]);
     },
