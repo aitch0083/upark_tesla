@@ -90,11 +90,12 @@ client_rawdata.on('message', function(topic, message){
 	// console.info('parser: ', parser(de_msg));
 	var mqtt_result = parser(de_msg);
 
-	if(parseInt(mqtt_result.value1) < 3000 && parseInt(mqtt_result.value3) === 1){
+	if(parseInt(mqtt_result.value1) < 3000){
 		var _c = setTimeout(function(){
+			
 			clearTimeout(_c);
 			
-			if(parseInt(mqtt_result.value1) < 3000 && parseInt(mqtt_result.value3) === 1){ //the charging stopped
+			if(parseInt(mqtt_result.value1) < 3000){ //the charging stopped
 				
 				var conditions = {
 					user_id,
