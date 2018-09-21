@@ -96,8 +96,6 @@ client_rawdata.on('message', function(topic, message){
 			
 			if(parseInt(mqtt_result.value1) < 3000 && parseInt(mqtt_result.value3) === 1){ //the charging stopped
 				
-				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
-
 				var conditions = {
 					user_id,
 					deviceid: mqtt_result.deviceid,
@@ -138,6 +136,8 @@ client_rawdata.on('message', function(topic, message){
 						end_time: now.format('YYYY-MM-DD HH:mm:ss')
 					}).then(function(record){
 
+						client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
+						
 						console.info('Shutdown charing pole: ',{
 							success: true,
 							message: 'Charging stopped'
