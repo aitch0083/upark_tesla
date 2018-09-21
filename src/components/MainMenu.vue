@@ -440,6 +440,7 @@ let main = {
       total_interval:    0,
       time_passed:       0,
       watts_used:        0,
+      modal_blocked:     false,
       current_user:      'N/A',
       charging_history:  [],
       current_year: _m.format('YYYY'),
@@ -528,9 +529,13 @@ let main = {
 
         console.info('result.body.mqtt_object.value3:', result.body.mqtt_object.value3, ', result.body.mqtt_object.value1:', result.body.mqtt_object.value1);
 
-        if(result.body.mqtt_object.value3 == '1' && result.body.mqtt_object.value1 == '0'){
+        app.modal_blocked = false;
+
+        if(!app.modal_blocked && result.body.mqtt_object.value3 == '1' && result.body.mqtt_object.value1 == '0'){
           app.$refs.waittingCharging.show();
-          return;
+          app.modal_blocked = true;
+        } else {
+          app.$refs.waittingCharging.hide();
         }
 
         // console.info('result.body.latest_record.end_time:', result.body.latest_record.end_time);
@@ -753,6 +758,7 @@ let main = {
       this.$refs.waittingCharging.hide();
       this.charging = 0;
       this.onChargingClick.apply(this, [event]);
+      this.modal_blocked = false;
     },
 
     onChargingClick(event){
