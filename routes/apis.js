@@ -112,7 +112,7 @@ client_smartmeter.on('message', function(topic, message){
 		return;
 	}
 
-	if(parseInt(mqtt_object.value1) < 3000 && !is_checking_charging_started){
+	if(parseInt(mqtt_object.value1) < 2000 && !is_checking_charging_started){
 
 		is_checking_charging_started = true;
 
@@ -121,7 +121,7 @@ client_smartmeter.on('message', function(topic, message){
 			clearTimeout(_c);
 			is_checking_charging_started = false;
 			
-			if(parseInt(mqtt_object.value1) < 3000){ //the charging stopped
+			if(parseInt(mqtt_object.value1) < 2000){ //the charging stopped
 				
 				var conditions = {
 					user_id,

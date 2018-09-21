@@ -86,7 +86,7 @@ var _c = setInterval(function(){
 
 	console.info('checking ', mqtt_object.value1, ':',mqtt_object.value3,':',mqtt_object.value2,'kwh');
 	
-	if(parseInt(mqtt_object.value1) < 3000){ //the charging stopped
+	if(parseInt(mqtt_object.value1) < 2000){ //the charging stopped
 		
 		var conditions = {
 			user_id,
