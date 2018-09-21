@@ -136,9 +136,11 @@
     </vs-row>
 
     <b-modal ref="waittingCharging" hide-footer>
-      <h3><i class="material-icons">power</i></h3>
-      等待連結
-      <b-button
+      <div style="text-align: center">
+        <h1><i class="material-icons">power</i></h1>
+        <h3>等待連結</h3>
+      </div>
+      <b-button class="mt-3"
         @click="onCancelCharing"
         variant="warning">
         取消
