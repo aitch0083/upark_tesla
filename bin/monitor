@@ -1,0 +1,152 @@
+#!/usr/bin/env node
+
+var mqtt    = require('mqtt');
+var moment  = require('moment');
+var SZ      = require('sequelize');
+var _       = require('lodash');
+
+var User        = require('../models/User');
+var ChargingLog = require('../models/ChargingLog');
+var Promise     = SZ.Promise;
+var now         = moment();
+var mqtt_object = {};
+
+const parser = (message) => {
+  
+  var nest = message.split("&");
+  var mqtt_result = {};
+
+  if(_.isArray(nest) && nest.length > 0){
+
+    nest.forEach((v, idx) => {
+      let idx_of_delimiter = v.indexOf('=');
+      let key              = v.substr(0, idx_of_delimiter);
+      let value            = v.substr(idx_of_delimiter + 1);
+
+      mqtt_result[key] = value;
+    });
+
+    return mqtt_result;
+  } else {
+    throw "Invalid data parsing";
+  }
+
+};//parser
+
+const user_id = 1;
+
+ChargingLog.belongsTo(User, {foreignKey:'user_id', as:'User'});
+
+const mqtt_server = 'mqtt://13.230.197.60';
+
+const client_rawdata = mqtt.connect(mqtt_server, {
+	username: 'innoUser1',
+	password: 'Inno+789'
+});
+
+const client_smartmeter = mqtt.connect(mqtt_server, {
+	username: 'innoUser1',
+	password: 'Inno+789'
+});
+
+const ab2str = function (buf) {
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
+};
+
+const str2ab = function (str) {
+  let buf     = new ArrayBuffer(str.length*2); // 2 bytes for each char
+  let bufView = new Uint16Array(buf);
+
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+  	bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+};
+
+const rawdata = '/v1/device/5732153917/rawdata';
+
+client_rawdata.on('connect', function () {
+  client_rawdata.subscribe(rawdata);
+});
+
+client_rawdata.on('message', function(topic, message){
+
+	// console.info('client_rawdata: ', ab2str(message));
+	
+	var de_msg = ab2str(message);
+
+	if(router.socket_io !== undefined){//check "bin/www" for the injection
+		router.socket_io.emit('mqtt_stream', {
+			topic: topic,
+			message: de_msg
+		});
+	}
+
+	//test if the device is still on
+	// console.info('parser: ', parser(de_msg));
+	var mqtt_result = parser(de_msg);
+
+	mqtt_object = mqtt_result;
+});
+
+var _c = setInterval(function(){
+	
+	if(parseInt(mqtt_object.value1) < 3000){ //the charging stopped
+		
+		var conditions = {
+			user_id,
+			deviceid: mqtt_object.deviceid,
+			status: 'start',
+			end_watts: 0,
+			interval: 0
+		};
+
+		let now = moment();
+
+		ChargingLog.findOne({
+			where: conditions,
+			order: [["id", "desc"]],
+			limit: 1,
+			include: [
+				{ model:User, as:'User', required: true, attributes:['id', 'firstname', 'lastname'] }
+			]
+		})
+		.then(function(record){
+
+			if(record === null || !record){
+				return;
+			}
+
+			//calculate the following:
+			let startTime = moment(record.start_time, 'YYYY-MM-DD HH:mm:ss');
+			let dd        = moment.duration(now.diff(startTime));
+			let watts     = mqtt_object.value2;
+
+			//console.info('record.start_time:', record.start_time,', startTime:', startTime.format('YYYY-MM-DD HH:mm:ss'));
+			// console.info('find dd:', dd.minutes());
+
+			record.updateAttributes({
+				end_watts: watts,
+				interval: dd.minutes()  + (dd.hours() * 60),
+				used_watts: (watts - record.start_watts),
+				status: 'end',
+				end_time: now.format('YYYY-MM-DD HH:mm:ss')
+			}).then(function(record){
+
+				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_object.deviceid}&value1=0&value3=0`);//turn off the charing poll
+
+				console.info('Shutdown charing pole by monitor: ',{
+					success: true,
+					message: 'Charging stopped by monitor'
+				});
+			}).catch(function(error){
+
+				console.error('error @ /Monitor::setCharging PUT:', error);
+			});
+		})
+		.catch(function(error){
+
+			console.error('error @ /Monitor::setCharging POST:', error);
+		});
+	}
+}, 90000);
