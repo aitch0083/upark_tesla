@@ -67,6 +67,7 @@ const rawdata = '/v1/device/5732153917/rawdata';
 
 client_rawdata.on('connect', function () {
   client_rawdata.subscribe(rawdata);
+  client_rawdata.publish(rawdata, 'Hello mqtt. This is the test from Monitor.');
 });
 
 client_rawdata.on('message', function(topic, message){
@@ -144,4 +145,4 @@ var _c = setInterval(function(){
 			console.error('error @ /Monitor::setCharging POST:', error);
 		});
 	}
-}, 90000);
+}, 3000);
