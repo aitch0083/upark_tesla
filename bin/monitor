@@ -129,8 +129,6 @@ var _c = setInterval(function(){
 				end_time: now.format('YYYY-MM-DD HH:mm:ss')
 			}).then(function(record){
 
-				client_smartmeter.publish(smartmeter, `deviceid=${mqtt_object.deviceid}&value1=0&value3=0`);//turn off the charing poll
-
 				console.info('Shutdown charing pole by monitor: ',{
 					success: true,
 					message: 'Charging stopped by monitor'
@@ -144,5 +142,7 @@ var _c = setInterval(function(){
 
 			console.error('error @ /Monitor::setCharging POST:', error);
 		});
+
+		client_smartmeter.publish(smartmeter, `deviceid=${mqtt_object.deviceid}&value1=0&value3=0`);//turn off the charing poll
 	}
 }, 90000);
