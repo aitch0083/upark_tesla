@@ -135,6 +135,16 @@
 
     </vs-row>
   </div>
+
+  <b-modal ref="waittingModal">
+    <h3><i class="material-icons">power</i></h3>
+    等待連結
+    <b-button
+      @click="onCancelCharing"
+      variant="warning">
+      取消
+    </b-button>
+  </b-modal>
 </template>
 
 <script>
@@ -512,6 +522,11 @@ let main = {
           return;
         }
 
+        if(result.body.mqtt_object.value3 == '1' && result.body.mqtt_object.value1 == '0'){
+          app.$refs.waittingModal.show();
+          return;
+        }
+
         // console.info('result.body.latest_record.end_time:', result.body.latest_record.end_time);
 
         // var st = moment(result.body.latest_record.start_time, 'YYYY-MM-DD HH:mm:ss');
@@ -725,6 +740,12 @@ let main = {
 
       return true;
     },//eo onLeverClick
+
+    onCancelCharing(event){
+      this.$refs.waittingModal.hide();
+      this.charging = 0;
+      this.onChargingClick.apply(this, [event]);
+    },
 
     onChargingClick(event){
       var app = this;
