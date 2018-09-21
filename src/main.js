@@ -28,7 +28,7 @@ let MyPi = (Vue, options) => {
 	});
 
 	Vue.filter('kmeter', function (value) {
-		if (!value) return ''
+		if (!value && isNaN(value)) return ''
 		value = parseFloat(Math.round(value/1000)).toFixed(2);
 		return value + 'K';
 	});
