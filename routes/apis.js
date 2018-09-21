@@ -92,8 +92,23 @@ client_rawdata.on('message', function(topic, message){
 	var mqtt_result = parser(de_msg);
 
 	mqtt_object = mqtt_result;
+});
 
-	if(parseInt(mqtt_result.value1) < 3000){
+client_smartmeter.on('connect', function () {
+  client_smartmeter.subscribe(smartmeter);
+  // client_smartmeter.publish(smartmeter, 'Hello mqtt. This is the test from API server.');
+});
+
+var is_checking_charging_started = false;
+client_smartmeter.on('message', function(topic, message){
+	var de_msg = ab2str(message);
+
+	//test if the device is still on
+	var mqtt_result = parser(de_msg);
+
+	console.info('client_smartmeter parser: ', mqtt_result);
+
+	if(parseInt(mqtt_result.value1) < 3000 && !is_checking_charging_started){
 		var _c = setTimeout(function(){
 			
 			clearTimeout(_c);
@@ -158,11 +173,6 @@ client_rawdata.on('message', function(topic, message){
 			}
 		}, 90000);
 	}
-});
-
-client_smartmeter.on('connect', function () {
-  client_smartmeter.subscribe(smartmeter);
-  // client_smartmeter.publish(smartmeter, 'Hello mqtt. This is the test from API server.');
 });
 
 router.options("/*", function(req, res, next){
