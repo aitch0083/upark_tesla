@@ -522,6 +522,8 @@ let main = {
           return;
         }
 
+        console.info('result.body.mqtt_object.value3:', result.body.mqtt_object.value3, ', result.body.mqtt_object.value1:', result.body.mqtt_object.value1);
+
         if(result.body.mqtt_object.value3 == '1' && result.body.mqtt_object.value1 == '0'){
           app.$refs.waittingModal.show();
           return;
