@@ -108,16 +108,24 @@ client_smartmeter.on('message', function(topic, message){
 
 	console.info('client_smartmeter parser: ', mqtt_result);
 
-	if(parseInt(mqtt_result.value1) < 3000 && !is_checking_charging_started){
+	if(parseInt(mqtt_result.value1) !== 1){
+		return;
+	}
+
+	if(parseInt(mqtt_object.value1) < 3000 && !is_checking_charging_started){
+
+		is_checking_charging_started = true;
+
 		var _c = setTimeout(function(){
 			
 			clearTimeout(_c);
+			is_checking_charging_started = false;
 			
-			if(parseInt(mqtt_result.value1) < 3000){ //the charging stopped
+			if(parseInt(mqtt_object.value1) < 3000){ //the charging stopped
 				
 				var conditions = {
 					user_id,
-					deviceid: mqtt_result.deviceid,
+					deviceid: mqtt_object.deviceid,
 					status: 'start',
 					end_watts: 0,
 					interval: 0
@@ -142,7 +150,7 @@ client_smartmeter.on('message', function(topic, message){
 					//calculate the following:
 					let startTime = moment(record.start_time, 'YYYY-MM-DD HH:mm:ss');
 					let dd        = moment.duration(now.diff(startTime));
-					let watts     = mqtt_result.value2;
+					let watts     = mqtt_object.value2;
 
 					//console.info('record.start_time:', record.start_time,', startTime:', startTime.format('YYYY-MM-DD HH:mm:ss'));
 					// console.info('find dd:', dd.minutes());
@@ -155,7 +163,7 @@ client_smartmeter.on('message', function(topic, message){
 						end_time: now.format('YYYY-MM-DD HH:mm:ss')
 					}).then(function(record){
 
-						client_smartmeter.publish(smartmeter, `deviceid=${mqtt_result.deviceid}&value1=0&value3=0`);//turn off the charing poll
+						client_smartmeter.publish(smartmeter, `deviceid=${mqtt_object.deviceid}&value1=0&value3=0`);//turn off the charing poll
 
 						console.info('Shutdown charing pole: ',{
 							success: true,
