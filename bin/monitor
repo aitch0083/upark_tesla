@@ -63,7 +63,8 @@ const str2ab = function (str) {
   return buf;
 };
 
-const rawdata = '/v1/device/5732153917/rawdata';
+const rawdata    = '/v1/device/5732153917/rawdata';
+const smartmeter = '/v1/device/5732153917/sensor/smartMeter/rawdata';
 
 client_rawdata.on('connect', function () {
   client_rawdata.subscribe(rawdata);
