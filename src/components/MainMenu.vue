@@ -304,7 +304,7 @@ const chart_config = {
       data: [],
       fill: false,
     },{
-      label: '充電時間(MIN)',
+      label: '充電時間(小時)',
       backgroundColor: 'rgb(254, 162, 205)',
       borderColor: 'rgb(254, 162, 205)',
       data: [],
@@ -1005,14 +1005,19 @@ let main = {
             result.body.records.forEach((record) => {
               var target_date = moment(record.start_time.substr(0,10), 'YYYY-MM-DD').format('DD');
 
-              if(to_show_watts[target_date] !== undefined){
-                to_show_watts[target_date] += parseInt(Math.round(record.used_watts/1000));
-                to_show_time[target_date]  += record.interval;
-              } else {
-                to_show_watts[target_date] = parseInt(Math.round(record.used_watts/1000));
-                to_show_time[target_date]  = record.interval;
+              console.info('target_date:', target_date, ',', to_show_time[target_date], ', interval:', record.interval);
+
+              if(to_show_watts[target_date] === undefined){
+                to_show_watts[target_date] = 0;
+                to_show_time[target_date]  = 0;
               }
+
+              to_show_watts[target_date] += parseInt(record.used_watts/1000);
+              to_show_time[target_date]  += record.interval;
+              
             });
+
+            console.info('end result: ',to_show_time);
 
             chart_config.data.datasets.forEach((dataset, dataset_idx) => {
               dataset.data = [];
