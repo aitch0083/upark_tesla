@@ -822,6 +822,7 @@ let main = {
       app.show_history = true;
 
       chart_config.data.labels = [];
+      app.filter_days          = [];
       
       chart_config.data.datasets.forEach((dataset) => {
         dataset.data = [];
@@ -994,6 +995,8 @@ let main = {
             // chart_config.data.labels.push(app.filter_days);
             chart_config.data.labels = [];
             // chart_config.data.datasets
+            
+            console.info('app.filter_days:', app.filter_days, ', chart_config.data.labels:', chart_config.data.labels);
 
             app.filter_days.forEach( (day) => {
               chart_config.data.labels.push(day.date_label);
