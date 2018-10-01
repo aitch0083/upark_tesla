@@ -611,7 +611,6 @@ let main = {
 
     // console.info('app.selected_week:', app.selected_week, ', duration:', duration.days());return;
     var day = start;
-    app.filter_days = [];
     for(var i = 0 ; i <= duration ; i++){
       
       if(i > 0){
