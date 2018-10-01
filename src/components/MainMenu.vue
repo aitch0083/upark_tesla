@@ -337,7 +337,7 @@ const chart_config = {
         display: true,
         scaleLabel: {
           display: true,
-          labelString: '瓦數/分鐘'
+          labelString: '瓦數/小時'
         }
       }]
     }
